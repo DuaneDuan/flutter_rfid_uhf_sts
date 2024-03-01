@@ -34,6 +34,7 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
   private static final String CHANNEL_IsEmptyTags = "isEmptyTags";
   private static final String CHANNEL_Close = "close";
   private static final String CHANNEL_Connect = "connect";
+  private static final String CHANNEL_DisConnect = "disConnect";
   private static final String CHANNEL_IsConnected = "isConnected";
   private static final String CHANNEL_SetPower = "setPower";
   private static final String CHANNEL_ScanMode = "setScanMode";
@@ -243,8 +244,7 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
       String action = intent.getAction();
 //      System.out.println(action);
       if ("com.sts.app.action.TAG".equals(action)) {
-
-        // 发送一个消息给Flutter，这样Flutter去取数据
+//        发送一个消息给Flutter，这样Flutter去取数据
 //        System.out.println("数dd据收到");
         channel.invokeMethod("sendData", null);
         return;
