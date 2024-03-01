@@ -4,6 +4,9 @@ package com.softtechsystems.rfid.flutter_rfid_uhf_sts;
 import static rfid.uhfapi_y2007.core.Util.ConvertByteArrayToHexWordString;
 
 // import rfid.uhfapi_y2007.ApiApplication;
+import android.content.Context;
+import android.content.Intent;
+
 import rfid.uhfapi_y2007.Rs232Port;
 import rfid.uhfapi_y2007.entities.AntennaPowerStatus;
 import rfid.uhfapi_y2007.entities.ConnectResponse;
@@ -34,6 +37,7 @@ import java.util.Map;
 
 public class RFID_API {
 
+    private Context context;
     private static RFID_API instance;
     private Reader reader;
     public boolean isConnected = false;
@@ -62,7 +66,8 @@ public class RFID_API {
     /**
      * 连接到RFID模块
      **/
-    public boolean connect() {
+    public boolean connect( Context context ) {
+        this.context = context;
         if (reader.getIsConnected()) {
             return true;
         }
@@ -143,10 +148,9 @@ public class RFID_API {
         return map;
     }
 
-    private void reader_OnInventoryReceived(Reader sender, RxdTagData tagData) {
+    private void reader_OnInventoryReceived(Reader sender, RxdTagData tagData ) {
         if (tagData == null)
             return;
-
         String epc = ConvertByteArrayToHexWordString(tagData.getEPC());
         String tid = ConvertByteArrayToHexWordString(tagData.getTID());
         String user = ConvertByteArrayToHexWordString(tagData.getUser());
@@ -154,6 +158,13 @@ public class RFID_API {
         String rssi = (tagData.getRSSI() == 0) ? "" : "" + tagData.getRSSI();
 
         TagMsgEntity tag = new TagMsgEntity("6C", rssi, ant, epc, tid, user);
+        // 创建一个广播Intent
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction("com.sts.app.action.TAG");
+//        System.out.println("开始广播 for ACTION_TAG");
+        // 发送广播
+        context.sendBroadcast(broadcastIntent);
+
         scannedTags.add(tag);
     }
 

@@ -43,6 +43,8 @@ abstract class FlutterRfidUhfStsPlatform extends PlatformInterface {
 
   Future<bool?> get disconnect;
 
+  Future<bool?> get close;
+
   Future<bool?> get isConnected;
 
   Future<bool?> get isScanning;
@@ -55,9 +57,11 @@ abstract class FlutterRfidUhfStsPlatform extends PlatformInterface {
 
   int get keyCount;
 
-  Stream<int> get dataStream; //keyDown count
+  Stream<Map<String,dynamic>> get dataStream;
+  // Stream<List<Map<String,dynamic>>> get tagStream;
 
   Future<void> clearTags() async {}
 
-  Future<void> keyDownInit() async {}
+  Future<void> streamInit() async {}
+
 }

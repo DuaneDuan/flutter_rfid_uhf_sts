@@ -9,34 +9,54 @@ import 'flutter_rfid_uhf_sts_platform_interface.dart';
 class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('STS_RFID_UHF');
+  final methodChannel = const MethodChannel('demo1');
   int keyStatus = 0;
-  static final StreamController<int> _keyDownController = StreamController<int>();
+  List<Map<String, dynamic>> tagData = [];
+  Map<String, dynamic> data = {};
+  static final StreamController<Map<String, dynamic>> _dataController =
+  StreamController<Map<String, dynamic>>();
+
+  // static final StreamController<List<Map<String,dynamic>>> _TagsController = StreamController<List<Map<String,dynamic>>>();
 
   @override
-  Stream<int> get dataStream => _keyDownController.stream;
+  Stream<Map<String, dynamic>> get dataStream => _dataController.stream;
 
   @override
-  Future<void> keyDownInit() async {
+  Future<void> streamInit() async {
     try {
       methodChannel.setMethodCallHandler(_handleMethod);
       await methodChannel.invokeMethod('keyDown');
+      await methodChannel.invokeMethod('sendData');
     } catch (e) {
       // print(e.toString());
     }
   }
 
-
   Future<void> _handleMethod(MethodCall call) async {
+    print("handleMethod: ${call.method}");
     if (call.method == 'keyDown') {
       keyStatus = keyStatus + 1;
-      _keyDownController.add(keyStatus);
+      data['keyCount'] = keyStatus;
+      _dataController.add(data);
+    }
+    if (call.method == 'sendData') {
+      List<dynamic>? result = await getTagData();
+      if (result is List<dynamic>) {
+        List<Map<String, dynamic>> resultMapList = result
+            .map<Map<String, dynamic>>(
+                (item) => Map<String, dynamic>.from(item))
+            .toList();
+        tagData = resultMapList;
+        data['tagData'] = tagData;
+        _dataController.add(data);
+      }
     }
   }
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+    await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 
@@ -47,6 +67,11 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
 
   @override
   Future<bool?> get disconnect async {
+    return methodChannel.invokeMethod('disConnect');
+  }
+
+  @override
+  Future<bool?> get close async {
     return methodChannel.invokeMethod('close');
   }
 
@@ -76,7 +101,7 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   }
 
   @override
-  Future<Map<dynamic,dynamic>?> getConfigure() async {
+  Future<Map<dynamic, dynamic>?> getConfigure() async {
     return methodChannel.invokeMethod('getConfigure');
   }
 
@@ -84,8 +109,9 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   Future<List<dynamic>?> getTagData() async {
     return methodChannel.invokeMethod('readData');
   }
+
   @override
-  int get keyCount  {
+  int get keyCount {
     return keyStatus;
   }
 

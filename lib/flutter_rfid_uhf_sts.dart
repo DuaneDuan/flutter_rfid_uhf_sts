@@ -14,6 +14,10 @@ class FlutterRfidUhfSts {
     return FlutterRfidUhfStsPlatform.instance.disconnect;
   }
 
+  Future<bool?> get close async {
+    return FlutterRfidUhfStsPlatform.instance.close;
+  }
+
   Future<bool?> get isConnected async {
     return FlutterRfidUhfStsPlatform.instance.isConnected;
   }
@@ -50,17 +54,21 @@ class FlutterRfidUhfSts {
     return [];
   }
 
-  Future<void> keyDown() async {
-    FlutterRfidUhfStsPlatform.instance.keyDownInit();
+  Future<void> streamInit() async {
+    FlutterRfidUhfStsPlatform.instance.streamInit();
   }
 
   int get keyCounts {
     return FlutterRfidUhfStsPlatform.instance.keyCount;
   }
 
-  Stream<int> get dataStream {
+  Stream<Map<String,dynamic>> get dataStream {
     return FlutterRfidUhfStsPlatform.instance.dataStream;
   }
+  //
+  // Stream<List<Map<String,dynamic>>> get tagStream {
+  //   return FlutterRfidUhfStsPlatform.instance.tagStream;
+  // }
 
   Future<void> clearData() async {
     FlutterRfidUhfStsPlatform.instance.clearTags();

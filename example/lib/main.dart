@@ -17,33 +17,41 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _flutterRfidUhfStsPlugin = FlutterRfidUhfSts();
   bool _isConnected = false;
+  final _demo1Plugin = FlutterRfidUhfSts();
   Map<dynamic, dynamic> _configFile = {};
   List<Map<String, dynamic>> _tagData = [];
   bool _isScanning = false;
   int _keyDownCount = 0;
-  StreamSubscription<int>? _dataSubscription;
+  int _scanTimes = 0;
+  StreamSubscription<Map<String,dynamic>>? _dataSubscription;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    _flutterRfidUhfStsPlugin.keyDown();
-    _dataSubscription = _flutterRfidUhfStsPlugin.dataStream.listen((newValue) async {
-      if (newValue % 2 == 0) {
+    _demo1Plugin.streamInit();
+    _dataSubscription = _demo1Plugin.dataStream.listen((newValue) async {
+      if (newValue['keyCount'] % 2 == 0) {
         if (_isConnected) {
-          _isScanning = (await _flutterRfidUhfStsPlugin.stopScan)!;
+          _isScanning = (await _demo1Plugin.stopScan)!;
         }
       } else {
+        if (!_isConnected){
+          _isConnected = (await _demo1Plugin.connect)!;
+        }
         if (_isConnected) {
-          _isScanning = (await _flutterRfidUhfStsPlugin.startScan)!;
+          _isScanning = (await _demo1Plugin.startScan)!;
         }
       }
       setState(() {
-        _keyDownCount = newValue;
+        _keyDownCount = newValue['keyCount']??0;
+        _tagData = newValue['tagData']??[];
+        _scanTimes = _scanTimes + 1;
+        print("扫描到的标签记录：${_tagData.length},扫描次数：${_scanTimes}");
       });
     });
+
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -54,7 +62,7 @@ class _MyAppState extends State<MyApp> {
 
     try {
       platformVersion =
-          await _flutterRfidUhfStsPlugin.getPlatformVersion() ?? 'Unknown platform version';
+          await _demo1Plugin.getPlatformVersion() ?? 'Unknown platform version';
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
     }
@@ -73,7 +81,7 @@ class _MyAppState extends State<MyApp> {
     Map<dynamic, dynamic> configFile;
 
     try {
-      configFile = await _flutterRfidUhfStsPlugin.getConfigure() ?? {};
+      configFile = await _demo1Plugin.getConfigure() ?? {};
     } on PlatformException {
       configFile = {"error": 'Get Configure file error!'};
     }
@@ -86,7 +94,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> getTagData() async {
     List<Map<String, dynamic>> tagData;
     try {
-      tagData = await _flutterRfidUhfStsPlugin.getTagData() ?? [];
+      tagData = await _demo1Plugin.getTagData() ?? [];
     } on PlatformException {
       tagData = [
         {"ERROR": "ERROR GET TAG DATA"}
@@ -102,7 +110,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(
-              title: const Text('STS RFID UHF Plugin example app'),
+              title: const Text('Plugin example app'),
             ),
             body: SingleChildScrollView(
               child:
@@ -118,7 +126,7 @@ class _MyAppState extends State<MyApp> {
                       style: TextStyle(color: Colors.redAccent),
                     ),
                     onPressed: () async {
-                      bool isConnected = await _flutterRfidUhfStsPlugin.connect ?? false;
+                      bool isConnected = await _demo1Plugin.connect ?? false;
                       setState(() {
                         _isConnected = isConnected;
                       });
@@ -148,7 +156,7 @@ class _MyAppState extends State<MyApp> {
                     ),
                     onPressed: () async {
                       bool isConnected =
-                          await _flutterRfidUhfStsPlugin.isConnected ?? false;
+                          await _demo1Plugin.isConnected ?? false;
                       setState(() {
                         _isConnected = isConnected;
                       });
@@ -159,11 +167,11 @@ class _MyAppState extends State<MyApp> {
                           borderRadius: BorderRadius.circular(18.0),
                         )),
                     child: const Text(
-                      'Close',
+                      'DisConnect',
                       style: TextStyle(color: Colors.redAccent),
                     ),
                     onPressed: () async {
-                      bool isConnected = await _flutterRfidUhfStsPlugin.disconnect ?? false;
+                      bool isConnected = await _demo1Plugin.disconnect ?? false;
                       setState(() {
                         _isConnected = !isConnected;
                       });
@@ -178,11 +186,26 @@ class _MyAppState extends State<MyApp> {
                       style: TextStyle(color: Colors.redAccent),
                     ),
                     onPressed: () async {
-                      if (_isConnected && !_isScanning) {
-                        bool isScanning = await _flutterRfidUhfStsPlugin.startScan ?? false;
+                      if (!_isConnected) {
+                        bool con = await _demo1Plugin.connect ?? false;
                         setState(() {
-                          _isScanning = isScanning;
+                          _isConnected = con;
                         });
+                        if (con) {
+                          bool isScanning =
+                              await _demo1Plugin.startScan ?? false;
+                          setState(() {
+                            _isScanning = isScanning;
+                          });
+                        }
+                      } else {
+                        if (!_isScanning) {
+                          bool isScanning =
+                              await _demo1Plugin.startScan ?? false;
+                          setState(() {
+                            _isScanning = isScanning;
+                          });
+                        }
                       }
                     }),
                 ElevatedButton(
@@ -196,15 +219,14 @@ class _MyAppState extends State<MyApp> {
                   ),
                   onPressed: () async {
                     if (_isConnected && _isScanning) {
-                      bool isScanning = await _flutterRfidUhfStsPlugin.stopScan ?? false;
+                      bool isScanning = await _demo1Plugin.stopScan ?? false;
                       setState(() {
                         _isScanning = isScanning;
                       });
                     }
                   },
                 ),
-                Text(
-                    'Tag data File: $_tagData'),
+                Text('First Tag data File: ${_tagData}\n'),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -218,6 +240,8 @@ class _MyAppState extends State<MyApp> {
                       await getTagData();
                     }),
                 Text('Key Status: ${_keyDownCount.toString()} \n'),
+
+                Text('Scan Times: ${_scanTimes.toString()} \n'),
               ]),
             )));
   }

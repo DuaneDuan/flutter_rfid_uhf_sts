@@ -56,10 +56,11 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "STS_RFID_UHF");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "demo1");
     channel.setMethodCallHandler(this);
     this.context = flutterPluginBinding.getApplicationContext();
     registerReceiver();
+//        registerSendTags();
   }
 
   @Override
@@ -98,11 +99,16 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
         result.success(true);
         break;
       case CHANNEL_Connect:
-        result.success(RFID_API.getInstance().connect());
+        result.success(RFID_API.getInstance().connect(context));
+        break;
+      case CHANNEL_DisConnect:
+        RFID_API.getInstance().disconnect();
+        result.success(true);
         break;
       case CHANNEL_IsConnected:
         result.success(RFID_API.getInstance().isConnected());
         break;
+
 //
 //      case CHANNEL_ScanMode:
 //        mode = call.argument("mode");  // 默认扫描模式“EPC” 另外一个是 “TID”
@@ -208,15 +214,25 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
 
   private void registerReceiver() {
     keyReceiver = new KeyReceiver();
-    IntentFilter intentFilter = new IntentFilter();
-    intentFilter.addAction("android.rfid.FUN_KEY");
-    intentFilter.addAction("android.intent.action.FUN_KEY");
-    context.registerReceiver(keyReceiver, intentFilter);
+    IntentFilter filter1 = new IntentFilter();
+    filter1.addAction("android.rfid.FUN_KEY");
+    filter1.addAction("android.intent.action.FUN_KEY");
+    filter1.addAction("com.sts.app.action.TAG");
+    context.registerReceiver(keyReceiver, filter1);
   }
+
+//    private void registerSendTags(){
+//       tagReceiver = new tagReceiver();
+//        IntentFilter filter2 = new IntentFilter();
+//        filter2.addAction("com.sts.app.action.TAG");
+//       context.registerReceiver(tagReceiver, filter2);
+//
+//    }
 
   private void unregisterReceiver() {
     if (keyReceiver != null) {
       context.unregisterReceiver(keyReceiver);
+//            context.unregisterReceiver(tagReceiver);
       keyReceiver = null;
     }
   }
@@ -224,16 +240,41 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
   private class KeyReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+      String action = intent.getAction();
+//      System.out.println(action);
+      if ("com.sts.app.action.TAG".equals(action)) {
+
+        // 发送一个消息给Flutter，这样Flutter去取数据
+//        System.out.println("数dd据收到");
+        channel.invokeMethod("sendData", null);
+        return;
+      }
+
       int keyCode = intent.getIntExtra("keyCode", 0);
-      if (keyCode != 134)
+      if (keyCode != 134 )
         return;
       if (intent.getBooleanExtra("keydown", true)) {
-        // Toast.makeText(context, "按键按下", Toast.LENGTH_LONG).show();
+
         // 发送一个KEY DOWN消息给Flutter
+        // System.out.println("keyDown");
         channel.invokeMethod("keyDown", null);
       }
     }
   }
-
+//
+//    private class tagReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            // 获取传入的 Intent 对象
+//            String action = intent.getAction();
+//            System.out.println("中午1");
+//            System.out.println(action);
+//            // 根据动作进行过滤
+//            if ("com.sts.app.action.TAG".equals(action)) {
+//                 Toast.makeText(context, "数据收到", Toast.LENGTH_LONG).show();
+//                 channel.invokeMethod("sendData", null);
+//            }
+//        }
+//    }
 
 }
