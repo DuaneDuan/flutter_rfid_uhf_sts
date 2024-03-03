@@ -57,11 +57,11 @@ abstract class FlutterRfidUhfStsPlatform extends PlatformInterface {
 
   int get keyCount;
 
-  Stream<Map<String,dynamic>> get dataStream;
+  Stream<Map<String, dynamic>> get dataStream;
   // Stream<List<Map<String,dynamic>>> get tagStream;
 
   Future<void> clearTags() async {}
 
   Future<void> streamInit() async {}
-
+  Future<void> streamClose() async {}
 }
