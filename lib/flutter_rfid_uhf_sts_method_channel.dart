@@ -13,13 +13,17 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   int keyStatus = 0;
   List<Map<String, dynamic>> tagData = [];
   Map<String, dynamic> data = {};
-  static final StreamController<Map<String, dynamic>> _dataController =
-  StreamController<Map<String, dynamic>>();
+  StreamController<Map<String, dynamic>> _dataController = StreamController<Map<String, dynamic>>.broadcast();
 
   // static final StreamController<List<Map<String,dynamic>>> _TagsController = StreamController<List<Map<String,dynamic>>>();
 
   @override
-  Stream<Map<String, dynamic>> get dataStream => _dataController.stream;
+  Stream<Map<String, dynamic>> get dataStream {
+    if ( _dataController.isClosed) {
+      _dataController = StreamController<Map<String, dynamic>>.broadcast(); // Use broadcast for multiple listeners
+    }
+    return _dataController.stream;
+  }
 
   @override
   Future<void> streamInit() async {
@@ -32,8 +36,19 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
     }
   }
 
+  @override
+  Future<void> streamClose() async {
+    try {
+      if (!_dataController.isClosed) {
+        _dataController.close();
+      }
+    } catch (e) {
+      // Handle exception
+    }
+  }
+
   Future<void> _handleMethod(MethodCall call) async {
-    print("handleMethod: ${call.method}");
+    // print("handleMethod: ${call.method}");
     if (call.method == 'keyDown') {
       keyStatus = keyStatus + 1;
       data['keyCount'] = keyStatus;
@@ -56,7 +71,7 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   @override
   Future<String?> getPlatformVersion() async {
     final version =
-    await methodChannel.invokeMethod<String>('getPlatformVersion');
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
   }
 
