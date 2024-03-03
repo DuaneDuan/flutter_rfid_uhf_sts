@@ -1,4 +1,3 @@
-
 import 'flutter_rfid_uhf_sts_platform_interface.dart';
 
 class FlutterRfidUhfSts {
@@ -44,7 +43,8 @@ class FlutterRfidUhfSts {
   }
 
   Future<List<Map<String, dynamic>>?> getTagData() async {
-    List<dynamic>? result = await FlutterRfidUhfStsPlatform.instance.getTagData();
+    List<dynamic>? result =
+        await FlutterRfidUhfStsPlatform.instance.getTagData();
     if (result is List<dynamic>) {
       List<Map<String, dynamic>> resultMapList = result
           .map<Map<String, dynamic>>((item) => Map<String, dynamic>.from(item))
@@ -58,11 +58,15 @@ class FlutterRfidUhfSts {
     FlutterRfidUhfStsPlatform.instance.streamInit();
   }
 
+  Future<void> streamClose() async {
+    FlutterRfidUhfStsPlatform.instance.streamClose();
+  }
+
   int get keyCounts {
     return FlutterRfidUhfStsPlatform.instance.keyCount;
   }
 
-  Stream<Map<String,dynamic>> get dataStream {
+  Stream<Map<String, dynamic>> get dataStream {
     return FlutterRfidUhfStsPlatform.instance.dataStream;
   }
   //
