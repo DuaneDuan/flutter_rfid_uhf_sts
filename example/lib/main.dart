@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
   bool _isScanning = false;
   int _keyDownCount = 0;
   int _scanTimes = 0;
-  StreamSubscription<Map<String,dynamic>>? _dataSubscription;
+  StreamSubscription<Map<String, dynamic>>? _dataSubscription;
 
   @override
   void initState() {
@@ -32,26 +32,27 @@ class _MyAppState extends State<MyApp> {
     initPlatformState();
     _demo1Plugin.streamInit();
     _dataSubscription = _demo1Plugin.dataStream.listen((newValue) async {
-      if (newValue['keyCount'] % 2 == 0) {
-        if (_isConnected) {
-          _isScanning = (await _demo1Plugin.stopScan)!;
-        }
-      } else {
-        if (!_isConnected){
-          _isConnected = (await _demo1Plugin.connect)!;
-        }
-        if (_isConnected) {
-          _isScanning = (await _demo1Plugin.startScan)!;
+      if (newValue['keyCount'] != null) {
+        if (newValue['keyCount'] % 2 == 0) {
+          if (_isConnected) {
+            _isScanning = (await _demo1Plugin.stopScan)!;
+          }
+        } else {
+          if (!_isConnected) {
+            _isConnected = (await _demo1Plugin.connect)!;
+          }
+          if (_isConnected) {
+            _isScanning = (await _demo1Plugin.startScan)!;
+          }
         }
       }
       setState(() {
-        _keyDownCount = newValue['keyCount']??0;
-        _tagData = newValue['tagData']??[];
+        _keyDownCount = newValue['keyCount'] ?? 0;
+        _tagData = newValue['tagData'] ?? [];
         _scanTimes = _scanTimes + 1;
         print("扫描到的标签记录：${_tagData.length},扫描次数：${_scanTimes}");
       });
     });
-
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
@@ -114,13 +115,13 @@ class _MyAppState extends State<MyApp> {
             ),
             body: SingleChildScrollView(
               child:
-              Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 Text('Connected Status: $_isConnected\n'),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'connect',
                       style: TextStyle(color: Colors.redAccent),
@@ -135,8 +136,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'getConfigure',
                       style: TextStyle(color: Colors.redAccent),
@@ -148,8 +149,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'check Connect Status',
                       style: TextStyle(color: Colors.redAccent),
@@ -164,8 +165,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'DisConnect',
                       style: TextStyle(color: Colors.redAccent),
@@ -179,8 +180,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'Start Scan',
                       style: TextStyle(color: Colors.redAccent),
@@ -211,8 +212,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                      )),
+                    borderRadius: BorderRadius.circular(18.0),
+                  )),
                   child: const Text(
                     'Stop Scan',
                     style: TextStyle(color: Colors.redAccent),
@@ -230,8 +231,8 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        )),
+                      borderRadius: BorderRadius.circular(18.0),
+                    )),
                     child: const Text(
                       'read tag data',
                       style: TextStyle(color: Colors.redAccent),
@@ -240,7 +241,6 @@ class _MyAppState extends State<MyApp> {
                       await getTagData();
                     }),
                 Text('Key Status: ${_keyDownCount.toString()} \n'),
-
                 Text('Scan Times: ${_scanTimes.toString()} \n'),
               ]),
             )));

@@ -57,7 +57,7 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "demo1");
+    channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "CH_flutter_rfid_uhf_sts");
     channel.setMethodCallHandler(this);
     this.context = flutterPluginBinding.getApplicationContext();
     registerReceiver();
@@ -78,36 +78,36 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
         result.success("Android " + android.os.Build.VERSION.RELEASE);
         break;
       case CHANNEL_IsScaning:
-        result.success(RFID_API.getInstance().isScan());
+        result.success(RFID_API.getInstance(this.context).isScan());
         break;
       case CHANNEL_StartScan:
-        RFID_API.getInstance().startScan();
-        result.success(RFID_API.getInstance().isScan());
+        RFID_API.getInstance(this.context).startScan();
+        result.success(RFID_API.getInstance(this.context).isScan());
         break;
       case CHANNEL_StopScan:
-        RFID_API.getInstance().stopScan();
-        result.success(RFID_API.getInstance().isScan());
+        RFID_API.getInstance(this.context).stopScan();
+        result.success(RFID_API.getInstance(this.context).isScan());
         break;
       case CHANNEL_ClearData:
-        RFID_API.getInstance().clearData();
+        RFID_API.getInstance(this.context).clearData();
         result.success(true);
         break;
       case CHANNEL_IsEmptyTags:
-        result.success(RFID_API.getInstance().isEmptyTags());
+        result.success(RFID_API.getInstance(this.context).isEmptyTags());
         break;
       case CHANNEL_Close:
-        RFID_API.getInstance().close();
+        RFID_API.getInstance(this.context).close();
         result.success(true);
         break;
       case CHANNEL_Connect:
-        result.success(RFID_API.getInstance().connect(context));
+        result.success(RFID_API.getInstance(this.context).connect(context));
         break;
       case CHANNEL_DisConnect:
-        RFID_API.getInstance().disconnect();
+        RFID_API.getInstance(this.context).disconnect();
         result.success(true);
         break;
       case CHANNEL_IsConnected:
-        result.success(RFID_API.getInstance().isConnected());
+        result.success(RFID_API.getInstance(this.context).isConnected());
         break;
 
 //
@@ -194,13 +194,13 @@ public class FlutterRfidUhfStsPlugin implements FlutterPlugin, MethodCallHandler
         Map<String, Object> sourceParams = new HashMap<>();
         sourceParams.put("ptr", sourcePtr);
         sourceParams.put("data", sourceData);
-        result.success(RFID_API.getInstance().writeData(psw,params,sourceParams));
+        result.success(RFID_API.getInstance(this.context).writeData(psw,params,sourceParams));
         break;
       case CHANNEL_ReadData:
-        result.success(RFID_API.getInstance().getScannedTags());
+        result.success(RFID_API.getInstance(this.context).getScannedTags());
         break;
       case CHANNEL_GetConfigure:
-        result.success(RFID_API.getInstance().getConfigure());
+        result.success(RFID_API.getInstance(this.context).getConfigure());
         break;
       default:
         result.notImplemented();

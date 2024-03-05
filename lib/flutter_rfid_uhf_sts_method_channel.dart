@@ -9,7 +9,7 @@ import 'flutter_rfid_uhf_sts_platform_interface.dart';
 class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
-  final methodChannel = const MethodChannel('demo1');
+  final methodChannel = const MethodChannel('CH_flutter_rfid_uhf_sts');
   int keyStatus = 0;
   List<Map<String, dynamic>> tagData = [];
   Map<String, dynamic> data = {};
@@ -33,7 +33,7 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   }
 
   Future<void> _handleMethod(MethodCall call) async {
-    print("handleMethod: ${call.method}");
+    // print("handleMethod: ${call.method}");
     if (call.method == 'keyDown') {
       keyStatus = keyStatus + 1;
       data['keyCount'] = keyStatus;

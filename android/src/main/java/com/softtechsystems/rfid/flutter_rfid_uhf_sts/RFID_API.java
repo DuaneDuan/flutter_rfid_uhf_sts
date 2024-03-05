@@ -7,6 +7,7 @@ import static rfid.uhfapi_y2007.core.Util.ConvertByteArrayToHexWordString;
 import android.content.Context;
 import android.content.Intent;
 
+import rfid.uhfapi_y2007.ApiApplication;
 import rfid.uhfapi_y2007.Rs232Port;
 import rfid.uhfapi_y2007.entities.AntennaPowerStatus;
 import rfid.uhfapi_y2007.entities.ConnectResponse;
@@ -51,14 +52,16 @@ public class RFID_API {
 
     public static InventoryConfig inventoryConfig = new InventoryConfig();
 
-    private RFID_API() {
+    private RFID_API( Context context) {
         // 初始化SDK
+        this.context = context;
         reader = new Reader("reader1", new Rs232Port("COM13,115200"));
+        new ApiApplication().init(this.context);
     }
 
-    public static synchronized RFID_API getInstance() {
+    public static synchronized RFID_API getInstance(Context context) {
         if (instance == null) {
-            instance = new RFID_API();
+            instance = new RFID_API(context);
         }
         return instance;
     }
@@ -73,11 +76,17 @@ public class RFID_API {
         }
 
         ConnectResponse response = reader.Connect();
+
         if (response.IsSucessed) {
             reader.OnInventoryReceived.addEvent(inventoryReceived);
             this.isConnected = true;
             return true;
         } else {
+            System.out.println("连接有错：");
+            System.out.println("错误消息：");
+            System.out.println(response.ErrorInfo.getErrMsg());
+            System.out.println("错误代码：");
+            System.out.println(response.ErrorInfo.getErrCode());
             return false;
         }
     }
