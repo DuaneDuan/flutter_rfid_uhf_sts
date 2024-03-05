@@ -1,3 +1,9 @@
-## 0.0.1
+## 0.0.7
 
-* TODO: Describe initial release.
+* Fix release issue at android\app\build.gradle
+* add
+* ``` 
+  minifyEnabled false
+  shrinkResources false
+* ```
+* flutter build apk --release

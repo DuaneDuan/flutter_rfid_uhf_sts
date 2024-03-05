@@ -1,6 +1,6 @@
 name: flutter_rfid_uhf_sts
 description: "This project is STS's Flutter plug-in for RFID UHF."
-version: 0.0.1
+version: 0.0.7
 homepage: https://github.com/DuaneDuan
 
 environment:
