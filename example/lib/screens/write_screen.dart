@@ -83,7 +83,8 @@ class WriteScreen extends StatelessWidget {
                   TextField(
                     controller: sourceDataController,
                     decoration: const InputDecoration(
-                      labelText: 'Source Match Data (Optional, filters target card)',
+                      labelText:
+                          'Source Match Data (Optional, filters target card)',
                       isDense: true,
                     ),
                   ),

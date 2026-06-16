@@ -51,7 +51,8 @@ class FileLogger {
 
   /// 记录一条日志，同时输出到控制台、内存及本地文件
   static Future<void> log(String message) async {
-    final timeStr = DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
+    final timeStr =
+        DateTime.now().toIso8601String().substring(11, 23); // HH:mm:ss.SSS
     final logLine = '[$timeStr] $message';
 
     // 输出到 IDE 控制台
@@ -66,7 +67,8 @@ class FileLogger {
     try {
       final path = await getLogFilePath();
       final file = File(path);
-      await file.writeAsString('$logLine\n', mode: FileMode.append, flush: true);
+      await file.writeAsString('$logLine\n',
+          mode: FileMode.append, flush: true);
     } catch (e) {
       print('Failed to write log to file: $e');
     }

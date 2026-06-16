@@ -47,10 +47,13 @@ class _MyAppState extends State<MyApp> {
   int _userLen = 6;
 
   // 写卡参数值 (Write Screen 共享)
-  final TextEditingController _passwordController = TextEditingController(text: '00000000');
+  final TextEditingController _passwordController =
+      TextEditingController(text: '00000000');
   final TextEditingController _ptrController = TextEditingController(text: '2');
-  final TextEditingController _dataController = TextEditingController(text: '112233445566778899001122');
-  final TextEditingController _sourcePtrController = TextEditingController(text: '2');
+  final TextEditingController _dataController =
+      TextEditingController(text: '112233445566778899001122');
+  final TextEditingController _sourcePtrController =
+      TextEditingController(text: '2');
   final TextEditingController _sourceDataController = TextEditingController();
 
   StreamSubscription<Map<String, dynamic>>? _dataSubscription;
@@ -94,45 +97,66 @@ class _MyAppState extends State<MyApp> {
     }
 
     _dataSubscription = _rfidPlugin.dataStream.listen((newValue) async {
-      // 1. 处理物理按键触发的扫描状态变更（Android 层已直接 toggle，这里仅同步 UI）
-      if (newValue['scanState'] != null) {
-        bool isScanning = newValue['scanState'] as bool;
-        FileLogger.log("Scan state changed via physical key: $isScanning");
-        setState(() {
-          _isScanning = isScanning;
-        });
-        // 扫描停止后自动刷新一次标签列表
-        if (!isScanning) {
-          await _readTagDataManual();
+      FileLogger.log("Stream received data: $newValue");
+
+      // 处理物理按键触发
+      if (newValue['keyCount'] != null) {
+        int keyCount = newValue['keyCount'];
+        FileLogger.log("Physical scan key trigger count: $keyCount");
+
+        if (keyCount % 2 == 0) {
+          if (_isConnected) {
+            bool? stopResult = await _rfidPlugin.stopScan;
+            FileLogger.log(
+                "Auto-Stop scan via physical key. Result: $stopResult");
+            setState(() {
+              _isScanning = stopResult ?? false;
+            });
+          }
+        } else {
+          if (!_isConnected) {
+            bool? connResult = await _rfidPlugin.connect;
+            FileLogger.log(
+                "Auto-Connect via physical key. Result: $connResult");
+            setState(() {
+              _isConnected = connResult ?? false;
+            });
+          }
+          if (_isConnected) {
+            bool? startResult = await _rfidPlugin.startScan;
+            FileLogger.log(
+                "Auto-Start scan via physical key. Result: $startResult");
+            setState(() {
+              _isScanning = startResult ?? false;
+            });
+          }
         }
       }
 
-      // 2. 更新物理按键计数显示
-      if (newValue['keyCount'] != null) {
-        int keyCount = newValue['keyCount'];
-        FileLogger.log("Physical key count: $keyCount");
-        setState(() {
-          _keyDownCount = keyCount;
-        });
-      }
-
-      // 3. 接收轮询推送的扫描标签列表，自动刷新 UI
+      // 接收扫描标签列表
       if (newValue['tagData'] != null) {
         List<dynamic> rawTags = newValue['tagData'];
         List<Map<String, dynamic>> parsedTags = rawTags
-            .map<Map<String, dynamic>>((item) => Map<String, dynamic>.from(item))
+            .map<Map<String, dynamic>>(
+                (item) => Map<String, dynamic>.from(item))
             .toList();
 
-        if (parsedTags.length != _tagData.length) {
-          // 仅当数量有变化时才刷新，减少不必要的 setState
-          setState(() {
-            _tagData = parsedTags;
-          });
-          FileLogger.log("Auto-refreshed tag list: ${parsedTags.length} tags");
-          if (parsedTags.isNotEmpty) {
-            FileLogger.log("Sample tag: ${parsedTags.first}");
-          }
+        setState(() {
+          _tagData = parsedTags;
+          _scanTimes++;
+        });
+
+        FileLogger.log(
+            "Scanned tags count: ${parsedTags.length}, Total scan pulses: $_scanTimes");
+        if (parsedTags.isNotEmpty) {
+          FileLogger.log("Sample scanned tag: ${parsedTags.first}");
         }
+      }
+
+      if (newValue['keyCount'] != null) {
+        setState(() {
+          _keyDownCount = newValue['keyCount'] ?? 0;
+        });
       }
     });
   }
@@ -141,7 +165,8 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlatformState() async {
     String platformVersion;
     try {
-      platformVersion = await _rfidPlugin.getPlatformVersion() ?? 'Unknown platform version';
+      platformVersion =
+          await _rfidPlugin.getPlatformVersion() ?? 'Unknown platform version';
     } on PlatformException catch (e) {
       platformVersion = 'Failed to get platform version: ${e.message}';
     }
@@ -312,7 +337,8 @@ class _MyAppState extends State<MyApp> {
       if (_scanUser) {
         bool? userPtrRes = await _rfidPlugin.setUserPtr(_userPtr);
         bool? userLenRes = await _rfidPlugin.setUserLen(_userLen);
-        FileLogger.log("Set User Ptr to $_userPtr ($userPtrRes), User Len to $_userLen ($userLenRes)");
+        FileLogger.log(
+            "Set User Ptr to $_userPtr ($userPtrRes), User Len to $_userLen ($userLenRes)");
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -356,7 +382,8 @@ class _MyAppState extends State<MyApp> {
       FileLogger.log("Write Data result: $writeSuccess");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(writeSuccess == true ? 'Write Success' : 'Write Failed'),
+          content:
+              Text(writeSuccess == true ? 'Write Success' : 'Write Failed'),
           backgroundColor: writeSuccess == true ? Colors.green : Colors.red,
         ),
       );
@@ -460,7 +487,8 @@ class _MyAppState extends State<MyApp> {
           children: [
             // 顶层状态卡片
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
               child: Card(
                 color: Colors.grey.shade900,
                 child: Padding(
@@ -470,12 +498,14 @@ class _MyAppState extends State<MyApp> {
                     children: [
                       Text(
                         'OS: $_platformVersion | Key Count: $_keyDownCount',
-                        style: const TextStyle(fontSize: 12, color: Colors.amber),
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.amber),
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Text('Status: ', style: TextStyle(fontSize: 12)),
+                          const Text('Status: ',
+                              style: TextStyle(fontSize: 12)),
                           Icon(
                             _isConnected ? Icons.check_circle : Icons.error,
                             color: _isConnected ? Colors.green : Colors.red,
@@ -490,7 +520,8 @@ class _MyAppState extends State<MyApp> {
                             ),
                           ),
                           const Spacer(),
-                          const Text('Scanning: ', style: TextStyle(fontSize: 12)),
+                          const Text('Scanning: ',
+                              style: TextStyle(fontSize: 12)),
                           Icon(
                             _isScanning ? Icons.sensors : Icons.sensors_off,
                             color: _isScanning ? Colors.blue : Colors.grey,

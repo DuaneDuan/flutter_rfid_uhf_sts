@@ -60,7 +60,18 @@ class SettingsScreen extends StatelessWidget {
                       DropdownButton<String>(
                         value: powerValue,
                         dropdownColor: Colors.grey.shade900,
-                        items: ['10', '15', '20', '25', '26', '27', '28', '29', '30', '33'].map((val) {
+                        items: [
+                          '10',
+                          '15',
+                          '20',
+                          '25',
+                          '26',
+                          '27',
+                          '28',
+                          '29',
+                          '30',
+                          '33'
+                        ].map((val) {
                           return DropdownMenuItem<String>(
                             value: val,
                             child: Text('$val dBm'),
@@ -79,8 +90,10 @@ class SettingsScreen extends StatelessWidget {
                         value: bandPosition,
                         dropdownColor: Colors.grey.shade900,
                         items: const [
-                          DropdownMenuItem(value: 1, child: Text('Band 1 (China/US)')),
-                          DropdownMenuItem(value: 2, child: Text('Band 2 (Europe)')),
+                          DropdownMenuItem(
+                              value: 1, child: Text('Band 1 (China/US)')),
+                          DropdownMenuItem(
+                              value: 2, child: Text('Band 2 (Europe)')),
                           DropdownMenuItem(value: 3, child: Text('Band 3')),
                           DropdownMenuItem(value: 4, child: Text('Band 4')),
                         ],
@@ -120,9 +133,11 @@ class SettingsScreen extends StatelessWidget {
                                 isDense: true,
                               ),
                               keyboardType: TextInputType.number,
-                              controller: TextEditingController(text: userPtr.toString())
+                              controller: TextEditingController(
+                                  text: userPtr.toString())
                                 ..selection = TextSelection.fromPosition(
-                                  TextPosition(offset: userPtr.toString().length),
+                                  TextPosition(
+                                      offset: userPtr.toString().length),
                                 ),
                               onChanged: onUserPtrChanged,
                             ),
@@ -135,9 +150,11 @@ class SettingsScreen extends StatelessWidget {
                                 isDense: true,
                               ),
                               keyboardType: TextInputType.number,
-                              controller: TextEditingController(text: userLen.toString())
+                              controller: TextEditingController(
+                                  text: userLen.toString())
                                 ..selection = TextSelection.fromPosition(
-                                  TextPosition(offset: userLen.toString().length),
+                                  TextPosition(
+                                      offset: userLen.toString().length),
                                 ),
                               onChanged: onUserLenChanged,
                             ),
@@ -164,7 +181,8 @@ class SettingsScreen extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         'Current Module Config:\n$configFile',
-                        style: const TextStyle(fontSize: 11, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 11, color: Colors.grey),
                       ),
                     ),
                   ],

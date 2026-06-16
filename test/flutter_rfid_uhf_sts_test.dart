@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockFlutterRfidUhfStsPlatform
     with MockPlatformInterfaceMixin
     implements FlutterRfidUhfStsPlatform {
-
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
 
@@ -139,7 +138,8 @@ class MockFlutterRfidUhfStsPlatform
 }
 
 void main() {
-  final FlutterRfidUhfStsPlatform initialPlatform = FlutterRfidUhfStsPlatform.instance;
+  final FlutterRfidUhfStsPlatform initialPlatform =
+      FlutterRfidUhfStsPlatform.instance;
 
   test('$MethodChannelFlutterRfidUhfSts is the default instance', () {
     expect(initialPlatform, isInstanceOf<MethodChannelFlutterRfidUhfSts>());
@@ -147,7 +147,8 @@ void main() {
 
   test('getPlatformVersion', () async {
     FlutterRfidUhfSts flutterRfidUhfStsPlugin = FlutterRfidUhfSts();
-    MockFlutterRfidUhfStsPlatform fakePlatform = MockFlutterRfidUhfStsPlatform();
+    MockFlutterRfidUhfStsPlatform fakePlatform =
+        MockFlutterRfidUhfStsPlatform();
     FlutterRfidUhfStsPlatform.instance = fakePlatform;
 
     expect(await flutterRfidUhfStsPlugin.getPlatformVersion(), '42');

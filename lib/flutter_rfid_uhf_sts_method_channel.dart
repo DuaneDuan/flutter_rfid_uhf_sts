@@ -13,12 +13,15 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
   int keyStatus = 0;
   List<Map<String, dynamic>> tagData = [];
   Map<String, dynamic> data = {};
-  StreamController<Map<String, dynamic>> _dataController = StreamController<Map<String, dynamic>>.broadcast();
+  StreamController<Map<String, dynamic>> _dataController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   @override
   Stream<Map<String, dynamic>> get dataStream {
     if (_dataController.isClosed) {
-      _dataController = StreamController<Map<String, dynamic>>.broadcast(); // Use broadcast for multiple listeners
+      _dataController = StreamController<
+          Map<String,
+              dynamic>>.broadcast(); // Use broadcast for multiple listeners
     }
     return _dataController.stream;
   }
@@ -83,7 +86,8 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
     }
     if (call.method == 'sendData') {
       if (call.arguments != null) {
-        final newTag = _normalizeTag(Map<dynamic, dynamic>.from(call.arguments));
+        final newTag =
+            _normalizeTag(Map<dynamic, dynamic>.from(call.arguments));
         tagData.add(newTag);
         data['tagData'] = List<Map<String, dynamic>>.from(tagData);
         _dataController.add(Map<String, dynamic>.from(data));
@@ -158,7 +162,8 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
 
   @override
   Future<List<dynamic>?> getTagData() async {
-    final List<dynamic>? rawList = await methodChannel.invokeMethod<List<dynamic>>('readData');
+    final List<dynamic>? rawList =
+        await methodChannel.invokeMethod<List<dynamic>>('readData');
     if (rawList != null) {
       return rawList.map((item) {
         if (item is Map) {
@@ -216,17 +221,20 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
 
   @override
   Future<bool?> setScanEpc(bool isScanEpc) {
-    return methodChannel.invokeMethod<bool>('SetScanEpc', {'isScanEpc': isScanEpc});
+    return methodChannel
+        .invokeMethod<bool>('SetScanEpc', {'isScanEpc': isScanEpc});
   }
 
   @override
   Future<bool?> setScanTid(bool isScanTid) {
-    return methodChannel.invokeMethod<bool>('SetScanTid', {'isScanTid': isScanTid});
+    return methodChannel
+        .invokeMethod<bool>('SetScanTid', {'isScanTid': isScanTid});
   }
 
   @override
   Future<bool?> setScanUser(bool isScanUser) {
-    return methodChannel.invokeMethod<bool>('SetScanUser', {'isScanUser': isScanUser});
+    return methodChannel
+        .invokeMethod<bool>('SetScanUser', {'isScanUser': isScanUser});
   }
 
   @override
@@ -241,21 +249,25 @@ class MethodChannelFlutterRfidUhfSts extends FlutterRfidUhfStsPlatform {
 
   @override
   Future<bool?> setScanCount(int scanCount) {
-    return methodChannel.invokeMethod<bool>('SetScanCount', {'scanCount': scanCount});
+    return methodChannel
+        .invokeMethod<bool>('SetScanCount', {'scanCount': scanCount});
   }
 
   @override
   Future<bool?> setScanTime(int scanTime) {
-    return methodChannel.invokeMethod<bool>('SetScanTime', {'scanTime': scanTime});
+    return methodChannel
+        .invokeMethod<bool>('SetScanTime', {'scanTime': scanTime});
   }
 
   @override
   Future<bool?> setShowAnts(bool isShowAnts) {
-    return methodChannel.invokeMethod<bool>('SetShowAnts', {'isShowAnts': isShowAnts});
+    return methodChannel
+        .invokeMethod<bool>('SetShowAnts', {'isShowAnts': isShowAnts});
   }
 
   @override
   Future<bool?> setShowRssi(bool isShowRssi) {
-    return methodChannel.invokeMethod<bool>('SetShowRssi', {'isShowRssi': isShowRssi});
+    return methodChannel
+        .invokeMethod<bool>('SetShowRssi', {'isShowRssi': isShowRssi});
   }
 }
