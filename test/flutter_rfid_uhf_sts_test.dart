@@ -13,77 +13,127 @@ class MockFlutterRfidUhfStsPlatform
 
   @override
   Future<void> clearTags() {
-    // TODO: implement clearTags
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement close
   Future<bool?> get close => throw UnimplementedError();
 
   @override
-  // TODO: implement connect
   Future<bool?> get connect => throw UnimplementedError();
 
   @override
-  // TODO: implement dataStream
   Stream<Map<String, dynamic>> get dataStream => throw UnimplementedError();
 
   @override
-  // TODO: implement disconnect
   Future<bool?> get disconnect => throw UnimplementedError();
 
   @override
   Future<Map?> getConfigure() {
-    // TODO: implement getConfigure
     throw UnimplementedError();
   }
 
   @override
   Future<List?> getTagData() {
-    // TODO: implement getTagData
     throw UnimplementedError();
   }
 
   @override
-  // TODO: implement isConnected
   Future<bool?> get isConnected => throw UnimplementedError();
 
   @override
-  // TODO: implement isEmptyTags
   Future<bool?> get isEmptyTags => throw UnimplementedError();
 
   @override
-  // TODO: implement isScanning
   Future<bool?> get isScanning => throw UnimplementedError();
 
   @override
-  // TODO: implement keyCount
   int get keyCount => throw UnimplementedError();
 
   @override
-  // TODO: implement startScan
   Future<bool?> get startScan => throw UnimplementedError();
 
   @override
-  // TODO: implement stopScan
   Future<bool?> get stopScan => throw UnimplementedError();
 
   @override
   Future<void> streamInit() {
-    // TODO: implement streamInit
     throw UnimplementedError();
   }
 
   @override
-  Future<bool?> writeData() {
-    // TODO: implement writeData
+  Future<bool?> writeData({
+    required String tagPassword,
+    required int ptr,
+    required String data,
+    required int sourcePtr,
+    required String sourceData,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanMode(String mode) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setPower(String power) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setBandPosition(int band) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanEpc(bool isScanEpc) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanTid(bool isScanTid) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanUser(bool isScanUser) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setUserPtr(int userPtr) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setUserLen(int userLen) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanCount(int scanCount) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setScanTime(int scanTime) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setShowAnts(bool isShowAnts) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool?> setShowRssi(bool isShowRssi) {
     throw UnimplementedError();
   }
 
   @override
   Future<void> streamClose() {
-    // TODO: implement streamClose
     throw UnimplementedError();
   }
 }

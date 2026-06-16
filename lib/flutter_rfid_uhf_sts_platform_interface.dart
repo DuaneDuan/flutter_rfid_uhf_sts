@@ -28,15 +28,69 @@ abstract class FlutterRfidUhfStsPlatform extends PlatformInterface {
   }
 
   Future<Map<dynamic, dynamic>?> getConfigure() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    throw UnimplementedError('getConfigure() has not been implemented.');
   }
 
   Future<List<dynamic>?> getTagData() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+    throw UnimplementedError('getTagData() has not been implemented.');
   }
 
-  Future<bool?> writeData() {
-    throw UnimplementedError('platformVersion() has not been implemented.');
+  Future<bool?> writeData({
+    required String tagPassword,
+    required int ptr,
+    required String data,
+    required int sourcePtr,
+    required String sourceData,
+  }) {
+    throw UnimplementedError('writeData() has not been implemented.');
+  }
+
+  Future<bool?> setScanMode(String mode) {
+    throw UnimplementedError('setScanMode() has not been implemented.');
+  }
+
+  Future<bool?> setPower(String power) {
+    throw UnimplementedError('setPower() has not been implemented.');
+  }
+
+  Future<bool?> setBandPosition(int band) {
+    throw UnimplementedError('setBandPosition() has not been implemented.');
+  }
+
+  Future<bool?> setScanEpc(bool isScanEpc) {
+    throw UnimplementedError('setScanEpc() has not been implemented.');
+  }
+
+  Future<bool?> setScanTid(bool isScanTid) {
+    throw UnimplementedError('setScanTid() has not been implemented.');
+  }
+
+  Future<bool?> setScanUser(bool isScanUser) {
+    throw UnimplementedError('setScanUser() has not been implemented.');
+  }
+
+  Future<bool?> setUserPtr(int userPtr) {
+    throw UnimplementedError('setUserPtr() has not been implemented.');
+  }
+
+  Future<bool?> setUserLen(int userLen) {
+    throw UnimplementedError('setUserLen() has not been implemented.');
+  }
+
+  Future<bool?> setScanCount(int scanCount) {
+    throw UnimplementedError('setScanCount() has not been implemented.');
+  }
+
+  Future<bool?> setScanTime(int scanTime) {
+    throw UnimplementedError('setScanTime() has not been implemented.');
+  }
+
+  Future<bool?> setShowAnts(bool isShowAnts) {
+    throw UnimplementedError('setShowAnts() has not been implemented.');
+  }
+
+  Future<bool?> setShowRssi(bool isShowRssi) {
+    throw UnimplementedError('setShowRssi() has not been implemented.');
   }
 
   Future<bool?> get connect;
@@ -58,7 +112,6 @@ abstract class FlutterRfidUhfStsPlatform extends PlatformInterface {
   int get keyCount;
 
   Stream<Map<String, dynamic>> get dataStream;
-  // Stream<List<Map<String,dynamic>>> get tagStream;
 
   Future<void> clearTags() async {}
 

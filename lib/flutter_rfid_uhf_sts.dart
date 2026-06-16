@@ -69,16 +69,72 @@ class FlutterRfidUhfSts {
   Stream<Map<String, dynamic>> get dataStream {
     return FlutterRfidUhfStsPlatform.instance.dataStream;
   }
-  //
-  // Stream<List<Map<String,dynamic>>> get tagStream {
-  //   return FlutterRfidUhfStsPlatform.instance.tagStream;
-  // }
 
   Future<void> clearData() async {
     FlutterRfidUhfStsPlatform.instance.clearTags();
   }
 
-  Future<bool?> writeData() async {
-    return FlutterRfidUhfStsPlatform.instance.writeData();
+  Future<bool?> writeData({
+    required String tagPassword,
+    required int ptr,
+    required String data,
+    required int sourcePtr,
+    required String sourceData,
+  }) async {
+    return FlutterRfidUhfStsPlatform.instance.writeData(
+      tagPassword: tagPassword,
+      ptr: ptr,
+      data: data,
+      sourcePtr: sourcePtr,
+      sourceData: sourceData,
+    );
+  }
+
+  Future<bool?> setScanMode(String mode) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanMode(mode);
+  }
+
+  Future<bool?> setPower(String power) async {
+    return FlutterRfidUhfStsPlatform.instance.setPower(power);
+  }
+
+  Future<bool?> setBandPosition(int band) async {
+    return FlutterRfidUhfStsPlatform.instance.setBandPosition(band);
+  }
+
+  Future<bool?> setScanEpc(bool isScanEpc) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanEpc(isScanEpc);
+  }
+
+  Future<bool?> setScanTid(bool isScanTid) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanTid(isScanTid);
+  }
+
+  Future<bool?> setScanUser(bool isScanUser) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanUser(isScanUser);
+  }
+
+  Future<bool?> setUserPtr(int userPtr) async {
+    return FlutterRfidUhfStsPlatform.instance.setUserPtr(userPtr);
+  }
+
+  Future<bool?> setUserLen(int userLen) async {
+    return FlutterRfidUhfStsPlatform.instance.setUserLen(userLen);
+  }
+
+  Future<bool?> setScanCount(int scanCount) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanCount(scanCount);
+  }
+
+  Future<bool?> setScanTime(int scanTime) async {
+    return FlutterRfidUhfStsPlatform.instance.setScanTime(scanTime);
+  }
+
+  Future<bool?> setShowAnts(bool isShowAnts) async {
+    return FlutterRfidUhfStsPlatform.instance.setShowAnts(isShowAnts);
+  }
+
+  Future<bool?> setShowRssi(bool isShowRssi) async {
+    return FlutterRfidUhfStsPlatform.instance.setShowRssi(isShowRssi);
   }
 }
