@@ -35,8 +35,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class RFID_API {
+
+    public interface TagReceiverListener {
+        void onTagReceived(Map<String, Object> tagMap);
+    }
 
     private Context context;
     private static RFID_API instance;
@@ -44,9 +50,11 @@ public class RFID_API {
     public boolean isConnected = false;
     private String scanMode = "EPC"; // 默认扫描模式 另外一个是 “TID”
     private boolean isScan = false;
+    private Timer pollTimer = null;
     private Event inventoryReceived = new Event(this, "reader_OnInventoryReceived");
 
     private List<TagMsgEntity> scannedTags = new ArrayList<>();
+    private List<TagReceiverListener> listeners = new ArrayList<>();
 
     private Map<String, Object> configJson = new HashMap();
 
@@ -64,6 +72,16 @@ public class RFID_API {
             instance = new RFID_API(context);
         }
         return instance;
+    }
+
+    public void addTagReceiverListener(TagReceiverListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeTagReceiverListener(TagReceiverListener listener) {
+        listeners.remove(listener);
     }
 
     /**
@@ -134,6 +152,7 @@ public class RFID_API {
             default:
                 throw new UnsupportedOperationException("Unsupported scan mode: " + scanMode);
         }
+        startPolling();
     }
 
     /**
@@ -141,9 +160,53 @@ public class RFID_API {
      */
     public void stopScan() {
         // 通过Reader对象停止扫描
+        stopPolling();
         this.isScan = false;
         if (isConnected)
             reader.Send(new MsgPowerOff());
+        // 停止后推送一次最终的完整 tagData
+        notifyTagDataUpdate();
+    }
+
+    /**
+     * 启动轮询：扫描期间每 500ms 推送一次完整标签列表给 Flutter
+     */
+    private void startPolling() {
+        stopPolling();
+        pollTimer = new Timer("rfid-poll-timer", true);
+        pollTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!isScan) {
+                    cancel();
+                    return;
+                }
+                notifyTagDataUpdate();
+            }
+        }, 500, 500);
+    }
+
+    /**
+     * 停止轮询定时器
+     */
+    private void stopPolling() {
+        if (pollTimer != null) {
+            pollTimer.cancel();
+            pollTimer = null;
+        }
+    }
+
+    /**
+     * 推送当前完整 tagData 给所有监听者
+     */
+    private void notifyTagDataUpdate() {
+        List<Map<String, Object>> tagList = getScannedTags();
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("tagData", tagList);
+        List<TagReceiverListener> listenersCopy = new ArrayList<>(listeners);
+        for (TagReceiverListener listener : listenersCopy) {
+            listener.onTagReceived(payload);
+        }
     }
 
     private static Map<String, Object> convertTagMsgEntityToMap(TagMsgEntity tagMsgEntity) {
@@ -167,14 +230,12 @@ public class RFID_API {
         String rssi = (tagData.getRSSI() == 0) ? "" : "" + tagData.getRSSI();
 
         TagMsgEntity tag = new TagMsgEntity("6C", rssi, ant, epc, tid, user);
-        // 创建一个广播Intent
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction("com.sts.app.action.TAG");
-//        System.out.println("开始广播 for ACTION_TAG");
-        // 发送广播
-        context.sendBroadcast(broadcastIntent);
-
         scannedTags.add(tag);
+
+        Map<String, Object> tagMap = convertTagMsgEntityToMap(tag);
+        for (TagReceiverListener listener : listeners) {
+            listener.onTagReceived(tagMap);
+        }
     }
 
     /**
